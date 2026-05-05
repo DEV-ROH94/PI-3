@@ -1,0 +1,6 @@
+{
+  "name": "Amor em Ação",
+  "description": "Sistema completo de gestão de assistência social para registro de prontuários, acompanhamento familiar e relatórios inteligentes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["Gestão de Prontuários", "Acompanhamento Familiar", "Relatórios Dinâmicos", "Assistente de IA"]
+}
