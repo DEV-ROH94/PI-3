@@ -2,6 +2,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './views/Login';
 import Dashboard from './views/Dashboard';
 import Prontuarios from './views/Prontuarios';
+import Assistidos from './views/Assistidos';
+import Relatorios from './views/Relatorios';
+import Configuracoes from './views/Configuracoes';
 import { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
@@ -35,26 +38,21 @@ export default function App() {
     );
   }
 
-  const isAuthenticated = !!session;
-
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
-        <Route path="/signup" element={!isAuthenticated ? <SignUp /> : <Navigate to="/dashboard" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
         
-        {/* Protected Routes */}
-        {isAuthenticated ? (
-          <>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/prontuarios" element={<Prontuarios />} />
-            <Route path="/dashboard/*" element={<Navigate to="/dashboard" />} />
-          </>
-        ) : (
-          <Route path="/dashboard/*" element={<Navigate to="/login" />} />
-        )}
+        {/* Public access for immediate use */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/prontuarios" element={<Prontuarios />} />
+        <Route path="/dashboard/assistidos" element={<Assistidos />} />
+        <Route path="/dashboard/relatorios" element={<Relatorios />} />
+        <Route path="/dashboard/config" element={<Configuracoes />} />
+        <Route path="/dashboard/*" element={<Navigate to="/dashboard" />} />
         
-        <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
     </Router>
   );

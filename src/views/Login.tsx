@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { Heart, Mail, Lock, UserPlus, ArrowRight, Loader2 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -22,7 +23,13 @@ export default function Login() {
     });
 
     if (error) {
-      setError("Email ou senha inválidos. Verifique suas credenciais.");
+      if (error.message.includes("Email not confirmed")) {
+        setError("Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada (e spam) para ativar sua conta.");
+      } else if (import.meta.env.VITE_SUPABASE_URL?.includes("placeholder")) {
+        setError("Erro de configuração: As chaves do Supabase não foram configuradas nos 'Secrets'.");
+      } else {
+        setError(error.message);
+      }
       setLoading(false);
     } else {
       navigate('/dashboard');

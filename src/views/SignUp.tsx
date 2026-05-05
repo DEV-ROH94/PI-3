@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { Heart, Mail, Lock, User, ArrowRight, Loader2, ArrowLeft } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
