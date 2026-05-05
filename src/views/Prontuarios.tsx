@@ -169,8 +169,10 @@ export default function Prontuarios() {
       encerramento_sintese: encerramentoSintese,
     };
 
-    if (assistidoId) {
+    if (assistidoId && assistidoId !== 'manual') {
       payload.assistido_id = assistidoId;
+    } else {
+      payload.assistido_id = null;
     }
 
     if (!editingId) {
@@ -232,7 +234,7 @@ export default function Prontuarios() {
 
   const handleEdit = (item: Prontuario) => {
     setEditingId(item.id);
-    setAssistidoId(item.assistido_id || '');
+    setAssistidoId(item.assistido_id || 'manual');
     setNewNome(item.assistido_nome);
     setNewRisco(item.risco_social);
     setNewAssistente(item.assistente_nome || '');
@@ -540,14 +542,39 @@ export default function Prontuarios() {
                             </label>
                             <select 
                                value={assistidoId}
-                               onChange={(e) => setAssistidoId(e.target.value)}
+                               onChange={(e) => {
+                                 setAssistidoId(e.target.value);
+                                 if (e.target.value !== 'manual') {
+                                   const selected = assistidosList.find(a => a.id === e.target.value);
+                                   if (selected) setNewNome(selected.nome);
+                                 } else if (!editingId) {
+                                   setNewNome('');
+                                 }
+                               }}
                                className="w-full bg-dark-bg border border-gray-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-light text-white"
                             >
                                <option value="">-- Selecione uma pessoa --</option>
+                               <option value="manual">+ DIGITAR NOME MANUALMENTE</option>
                                {assistidosList.map(a => (
                                  <option key={a.id} value={a.id}>{a.nome}</option>
                                ))}
                             </select>
+
+                            {assistidoId === 'manual' && (
+                              <motion.div 
+                                initial={{ opacity: 0, y: -10 }} 
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-4 space-y-2"
+                              >
+                                 <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nome Completo do Assistido</label>
+                                 <input 
+                                    value={newNome}
+                                    onChange={(e) => handleOnlyLetters(e.target.value, setNewNome)}
+                                    className="w-full bg-[#0a0d14] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-primary-light"
+                                    placeholder="Digite o nome completo para este prontuário..."
+                                 />
+                              </motion.div>
+                            )}
                           </div>
 
                           <div className="space-y-2">
