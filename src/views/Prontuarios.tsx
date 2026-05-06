@@ -68,6 +68,7 @@ export default function Prontuarios() {
   const [activeFilter, setActiveFilter] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [prontuarios, setProntuarios] = useState<Prontuario[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assistidosList, setAssistidosList] = useState<{id: string, nome: string}[]>([]);
@@ -110,6 +111,10 @@ export default function Prontuarios() {
 
   const fetchData = async () => {
     setLoading(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUser(user);
+
     // Fetch Prontuarios
     const { data: pData, error: pError } = await supabase
       .from('prontuarios')
@@ -333,6 +338,8 @@ export default function Prontuarios() {
     }
   };
 
+  const isGuest = currentUser?.email === 'convidado@convidado.com';
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -346,13 +353,15 @@ export default function Prontuarios() {
                 <Filter className="w-4 h-4" />
                 <span>Filtrar</span>
              </button>
-             <button 
-               onClick={() => setIsModalOpen(true)}
-               className="bg-primary-light hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm tracking-wide flex items-center space-x-2 transition-all shadow-lg shadow-primary-light/20"
-             >
-                <Plus className="w-4 h-4" />
-                <span>Novo Prontuário</span>
-             </button>
+             {!isGuest && (
+               <button 
+                 onClick={() => setIsModalOpen(true)}
+                 className="bg-primary-light hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm tracking-wide flex items-center space-x-2 transition-all shadow-lg shadow-primary-light/20"
+               >
+                  <Plus className="w-4 h-4" />
+                  <span>Novo Prontuário</span>
+               </button>
+             )}
           </div>
         </header>
 
@@ -450,19 +459,20 @@ export default function Prontuarios() {
                     <td className="px-8 py-5 text-right">
                        <div className="flex items-center justify-end space-x-2">
                           <button 
-                            disabled={deletingId === item.id}
                             onClick={(e) => { e.stopPropagation(); handleEdit(item); }}
                             className="p-2 rounded-lg hover:bg-gray-800 text-gray-500 hover:text-white transition-all disabled:opacity-50"
                           >
-                             <Edit className="w-4 h-4" />
+                             {isGuest ? <Eye className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
                           </button>
-                          <button 
-                            disabled={deletingId === item.id}
-                            onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
-                            className="p-2 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-400 transition-all disabled:opacity-50"
-                          >
-                             {deletingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                          </button>
+                          {!isGuest && (
+                            <button 
+                              disabled={deletingId === item.id}
+                              onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
+                              className="p-2 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-400 transition-all disabled:opacity-50"
+                            >
+                               {deletingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                            </button>
+                          )}
                        </div>
                     </td>
                   </motion.tr>

@@ -47,6 +47,7 @@ interface Assistido {
 export default function Assistidos() {
   const [assistidos, setAssistidos] = useState<Assistido[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -83,6 +84,10 @@ export default function Assistidos() {
 
   const fetchAssistidos = async () => {
     setLoading(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUser(user);
+
     const { data, error } = await supabase
       .from('assistidos')
       .select('*')
@@ -247,6 +252,8 @@ export default function Assistidos() {
     setActiveTab('info');
   };
 
+  const isGuest = currentUser?.email === 'convidado@convidado.com';
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -255,13 +262,15 @@ export default function Assistidos() {
             <h1 className="text-3xl font-display font-bold text-white tracking-tight">Famílias Assistidas</h1>
             <p className="text-gray-500 text-sm mt-1">Gerencie o cadastro de pessoas atendidas pelo programa.</p>
           </div>
-          <button 
-            onClick={() => { resetForm(); setIsModalOpen(true); }}
-            className="bg-primary-light hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center space-x-2 transition-all shadow-lg shadow-primary-light/20"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Novo Cadastro</span>
-          </button>
+          {!isGuest && (
+            <button 
+              onClick={() => { resetForm(); setIsModalOpen(true); }}
+              className="bg-primary-light hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm flex items-center space-x-2 transition-all shadow-lg shadow-primary-light/20"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Novo Cadastro</span>
+            </button>
+          )}
         </header>
 
         <div className="bg-[#0a0d14] border border-gray-800 p-6 rounded-2xl flex flex-col md:flex-row gap-4">
@@ -300,20 +309,24 @@ export default function Assistidos() {
                   <User className="w-6 h-6 text-primary-light outline-none" />
                 </div>
                 <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button 
-                    disabled={deletingId === item.id}
-                    onClick={(e) => { e.stopPropagation(); handleEdit(item); }}
-                    className="p-2 bg-gray-900 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors disabled:opacity-50"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button 
-                    disabled={deletingId === item.id}
-                    onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
-                    className="p-2 bg-gray-900 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
-                  >
-                    {deletingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                  </button>
+                  {!isGuest && (
+                    <>
+                      <button 
+                        disabled={deletingId === item.id}
+                        onClick={(e) => { e.stopPropagation(); handleEdit(item); }}
+                        className="p-2 bg-gray-900 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button 
+                        disabled={deletingId === item.id}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
+                        className="p-2 bg-gray-900 hover:bg-red-500/20 rounded-lg text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                      >
+                        {deletingId === item.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 

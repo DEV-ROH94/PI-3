@@ -23,6 +23,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assistidosList, setAssistidosList] = useState<{id: string, nome: string}[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   
   // Form State
   const [assistidoId, setAssistidoId] = useState('');
@@ -32,12 +33,17 @@ export default function Dashboard() {
 
   useEffect(() => {
     async function loadData() {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+
       const { data } = await supabase.from('assistidos').select('id, nome').order('nome');
       if (data) setAssistidosList(data);
       setLoading(false);
     }
     loadData();
   }, []);
+
+  const isGuest = currentUser?.email === 'convidado@convidado.com';
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,13 +163,15 @@ export default function Dashboard() {
             <h1 className="text-3xl font-display font-bold tracking-tight text-white">Painel de Controle</h1>
             <p className="text-gray-500 text-sm mt-1">Bem-vindo, aqui está o resumo das atividades de hoje.</p>
           </div>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-primary-light hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm tracking-wide flex items-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-primary-light/20"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Novo Registro</span>
-          </button>
+          {!isGuest && (
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-primary-light hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm tracking-wide flex items-center space-x-2 transition-all active:scale-[0.98] shadow-lg shadow-primary-light/20"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Novo Registro</span>
+            </button>
+          )}
         </header>
 
         {/* Modal inside Dashboard for quick add */}

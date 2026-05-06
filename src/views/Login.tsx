@@ -12,6 +12,36 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [seeding, setSeeding] = useState(false);
+
+  const handleSeed = async () => {
+    setSeeding(true);
+    const users = [
+      { email: 'admin@admin.com', password: '123456', name: 'Administrador' },
+      { email: 'convidado@convidado.com', password: '123456', name: 'Convidado' }
+    ];
+    
+    let results = [];
+    for (const u of users) {
+      const { error } = await supabase.auth.signUp({
+        email: u.email,
+        password: u.password,
+        options: { data: { full_name: u.name } }
+      });
+      if (error) {
+        if (error.message.includes("User already registered")) {
+          results.push(`${u.email}: Já existe.`);
+        } else {
+          results.push(`${u.email}: ${error.message}`);
+        }
+      } else {
+        results.push(`${u.email}: Criado com sucesso!`);
+      }
+    }
+    alert(results.join('\n'));
+    setSeeding(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -191,6 +221,16 @@ export default function Login() {
              <Link to="/signup" className="w-10 h-10 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center hover:bg-gray-800 transition-colors">
                 <UserPlus className="w-4 h-4 text-gray-400" />
              </Link>
+          </div>
+
+          <div className="pt-4 flex justify-center">
+            <button 
+              onClick={handleSeed}
+              disabled={seeding}
+              className="text-[9px] tracking-[0.2em] font-bold text-gray-600 hover:text-primary-light uppercase transition-colors disabled:opacity-50"
+            >
+              {seeding ? 'Provisionando...' : 'Provisionar Contas de Teste (Admin/Convidado)'}
+            </button>
           </div>
         </div>
       </motion.div>

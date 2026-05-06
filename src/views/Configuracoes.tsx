@@ -124,6 +124,8 @@ export default function Configuracoes() {
     }
   };
 
+  const isGuest = email === 'convidado@convidado.com';
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto space-y-12 pb-20">
@@ -197,15 +199,17 @@ export default function Configuracoes() {
 
                      <div className="pt-6 border-t border-gray-900 flex items-center justify-between">
                         <p className="text-[10px] text-gray-500 font-medium max-w-[200px]">Estas informações aparecerão nos prontuários e relatórios que você gerar.</p>
-                        <button 
-                          disabled={loading}
-                          type="submit"
-                          className="bg-primary-light hover:bg-blue-600 disabled:opacity-50 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest flex items-center space-x-2 transition-all shadow-lg shadow-primary-light/20"
-                        >
-                           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 
-                            success ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-                           <span>{success ? 'Salvo!' : loading ? 'Salvando...' : 'Salvar Perfil'}</span>
-                        </button>
+                        {!isGuest && (
+                          <button 
+                            disabled={loading}
+                            type="submit"
+                            className="bg-primary-light hover:bg-blue-600 disabled:opacity-50 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest flex items-center space-x-2 transition-all shadow-lg shadow-primary-light/20"
+                          >
+                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 
+                              success ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+                             <span>{success ? 'Salvo!' : loading ? 'Salvando...' : 'Salvar Perfil'}</span>
+                          </button>
+                        )}
                      </div>
                   </form>
                </motion.div>
@@ -281,13 +285,15 @@ export default function Configuracoes() {
                        <span>Exportar Backup Completo (JSON)</span>
                     </button>
 
-                    <button 
-                      onClick={handleDeleteAccount}
-                      disabled={loading}
-                      className="py-4 border border-red-500/20 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50"
-                    >
-                       Excluir Permanentemente Meus Dados
-                    </button>
+                    {!isGuest && (
+                      <button 
+                        onClick={handleDeleteAccount}
+                        disabled={loading}
+                        className="py-4 border border-red-500/20 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50"
+                      >
+                         Excluir Permanentemente Meus Dados
+                      </button>
+                    )}
                  </div>
                </motion.div>
              )}
