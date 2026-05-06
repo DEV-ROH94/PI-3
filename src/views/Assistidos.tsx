@@ -107,6 +107,7 @@ export default function Assistidos() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isGuest) return;
     setSaving(true);
     
     const { data: { user } } = await supabase.auth.getUser();
@@ -195,6 +196,7 @@ export default function Assistidos() {
 
   const handleDelete = async (id: string) => {
     try {
+      if (isGuest) return;
       if (!confirm('Deseja realmente excluir este assistido? Isso também excluirá permanentemente todos os seus prontuários vinculados.')) return;
 
       setDeletingId(id);
@@ -501,13 +503,15 @@ export default function Assistidos() {
                      <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                        <div className="flex items-center justify-between">
                          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Composição Familiar</label>
-                         <button 
-                           type="button" 
-                           onClick={addFamilyMember}
-                           className="bg-primary-light/10 text-primary-light hover:bg-primary-light hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all"
-                         >
-                           + Adicionar Membro
-                         </button>
+                         {!isGuest && (
+                           <button 
+                             type="button" 
+                             onClick={addFamilyMember}
+                             className="bg-primary-light/10 text-primary-light hover:bg-primary-light hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all"
+                           >
+                             + Adicionar Membro
+                           </button>
+                         )}
                        </div>
                        
                        {composicaoFamiliar.length === 0 ? (
@@ -518,13 +522,15 @@ export default function Assistidos() {
                          <div className="space-y-4">
                            {composicaoFamiliar.map((member, idx) => (
                              <div key={idx} className="bg-dark-bg border border-gray-800 rounded-2xl p-4 relative group">
-                               <button 
-                                 type="button"
-                                 onClick={() => removeFamilyMember(idx)}
-                                 className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                               >
-                                 <X className="w-3 h-3" />
-                               </button>
+                               {!isGuest && (
+                                 <button 
+                                   type="button"
+                                   onClick={() => removeFamilyMember(idx)}
+                                   className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                 >
+                                   <X className="w-3 h-3" />
+                                 </button>
+                               )}
                                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                                  <div className="space-y-1 md:col-span-2">
                                    <label className="text-[10px] text-gray-600 uppercase font-bold">Nome</label>
@@ -643,16 +649,18 @@ export default function Assistidos() {
                          onClick={() => setIsModalOpen(false)}
                          className="bg-gray-900 border border-gray-800 text-gray-500 px-6 py-2.5 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:text-white transition-all"
                        >
-                         Cancelar
+                         {isGuest ? 'Fechar' : 'Cancelar'}
                        </button>
-                       <button 
-                         onClick={handleSubmit}
-                         disabled={saving}
-                         type="button"
-                         className="bg-primary-light hover:bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all flex items-center justify-center space-x-2 shadow-lg shadow-primary-light/20"
-                       >
-                         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>{editingId ? 'Atualizar Registro' : 'Concluir Cadastro'}</span>}
-                       </button>
+                       {!isGuest && (
+                         <button 
+                           onClick={handleSubmit}
+                           disabled={saving}
+                           type="button"
+                           className="bg-primary-light hover:bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all flex items-center justify-center space-x-2 shadow-lg shadow-primary-light/20"
+                         >
+                           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>{editingId ? 'Atualizar Registro' : 'Concluir Cadastro'}</span>}
+                         </button>
+                       )}
                    </div>
                 </div>
              </motion.div>

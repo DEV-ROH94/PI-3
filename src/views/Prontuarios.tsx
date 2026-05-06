@@ -139,6 +139,7 @@ export default function Prontuarios() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isGuest) return;
     setSaving(true);
     
     const { data: { user } } = await supabase.auth.getUser();
@@ -281,6 +282,7 @@ export default function Prontuarios() {
 
   const handleDelete = async (id: string) => {
     try {
+      if (isGuest) return;
       if (!confirm('Deseja realmente excluir este prontuário? Esta ação não pode ser desfeita.')) return;
 
       setDeletingId(id);
@@ -695,25 +697,29 @@ export default function Prontuarios() {
                       <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                         <div className="flex items-center justify-between">
                           <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Evolução do Caso / Registros</label>
-                          <button 
-                            type="button" 
-                            onClick={addEvolucao}
-                            className="bg-primary-light/10 text-primary-light hover:bg-primary-light hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all"
-                          >
-                            + Novo Registro
-                          </button>
+                          {!isGuest && (
+                            <button 
+                              type="button" 
+                              onClick={addEvolucao}
+                              className="bg-primary-light/10 text-primary-light hover:bg-primary-light hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all"
+                            >
+                              + Novo Registro
+                            </button>
+                          )}
                         </div>
                         
                         <div className="space-y-4">
                            {evolucao.map((entry, idx) => (
                              <div key={idx} className="bg-dark-bg border border-gray-800 rounded-2xl p-6 relative group">
-                                <button 
-                                  type="button"
-                                  onClick={() => setEvolucao(evolucao.filter((_, i) => i !== idx))}
-                                  className="absolute top-4 right-4 text-red-500 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                {!isGuest && (
+                                  <button 
+                                    type="button"
+                                    onClick={() => setEvolucao(evolucao.filter((_, i) => i !== idx))}
+                                    className="absolute top-4 right-4 text-red-500 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                    <div className="space-y-1">
                                       <label className="text-[10px] text-gray-600 uppercase font-bold">Data</label>
@@ -767,13 +773,15 @@ export default function Prontuarios() {
                          <div className="space-y-6">
                             <div className="flex items-center justify-between">
                               <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Articulação com a Rede</label>
-                              <button 
-                                type="button" 
-                                onClick={addArticulacao}
-                                className="bg-primary-light/10 text-primary-light hover:bg-primary-light hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all"
-                              >
-                                + Novo Encaminhamento
-                              </button>
+                              {!isGuest && (
+                                <button 
+                                  type="button" 
+                                  onClick={addArticulacao}
+                                  className="bg-primary-light/10 text-primary-light hover:bg-primary-light hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all"
+                                >
+                                  + Novo Encaminhamento
+                                </button>
+                              )}
                             </div>
                             <div className="space-y-4">
                                {articulacaoRede.map((item, idx) => (
@@ -888,16 +896,18 @@ export default function Prontuarios() {
                          onClick={() => { setIsModalOpen(false); resetForm(); }}
                          className="bg-gray-900 border border-gray-800 text-gray-500 px-6 py-2.5 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:text-white transition-all"
                        >
-                         Cancelar
+                         {isGuest ? 'Fechar' : 'Cancelar'}
                        </button>
-                       <button 
-                         onClick={handleCreate}
-                         disabled={saving}
-                         type="button"
-                         className="bg-primary-light hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all flex items-center justify-center space-x-2 shadow-lg shadow-primary-light/20"
-                       >
-                         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>{editingId ? 'Salvar Histórico' : 'Cadastrar Prontuário'}</span>}
-                       </button>
+                       {!isGuest && (
+                         <button 
+                           onClick={handleCreate}
+                           disabled={saving}
+                           type="button"
+                           className="bg-primary-light hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] transition-all flex items-center justify-center space-x-2 shadow-lg shadow-primary-light/20"
+                         >
+                           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>{editingId ? 'Salvar Histórico' : 'Cadastrar Prontuário'}</span>}
+                         </button>
+                       )}
                    </div>
                 </div>
              </motion.div>
