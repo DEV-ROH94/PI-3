@@ -98,6 +98,8 @@ export default function Prontuarios() {
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  const isGuest = currentUser?.email === 'convidado@convidado.com';
+
   // Input Handlers
   const handleOnlyLetters = (value: string, setter: (val: string) => void) => {
     const lettersOnly = value.replace(/[^a-zA-ZáàâãéèêíïóôõöúçñÁÀÂÃÉÈÊÍÏÓÔÕÖÚÇÑ\s]/g, '');
@@ -339,8 +341,6 @@ export default function Prontuarios() {
       default: return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
     }
   };
-
-  const isGuest = currentUser?.email === 'convidado@convidado.com';
 
   return (
     <Layout>

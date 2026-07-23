@@ -41,15 +41,14 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Login />} />
+        <Route path="/signup" element={session ? <Navigate to="/dashboard" /> : <SignUp />} />
         
-        {/* Public access for immediate use */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/prontuarios" element={<Prontuarios />} />
-        <Route path="/dashboard/assistidos" element={<Assistidos />} />
-        <Route path="/dashboard/relatorios" element={<Relatorios />} />
-        <Route path="/dashboard/config" element={<Configuracoes />} />
+        <Route path="/dashboard" element={session ? <Dashboard /> : <Navigate to="/login" />} />
+        <Route path="/dashboard/prontuarios" element={session ? <Prontuarios /> : <Navigate to="/login" />} />
+        <Route path="/dashboard/assistidos" element={session ? <Assistidos /> : <Navigate to="/login" />} />
+        <Route path="/dashboard/relatorios" element={session ? <Relatorios /> : <Navigate to="/login" />} />
+        <Route path="/dashboard/config" element={session ? <Configuracoes /> : <Navigate to="/login" />} />
         <Route path="/dashboard/*" element={<Navigate to="/dashboard" />} />
         
         <Route path="/" element={<Navigate to="/dashboard" />} />

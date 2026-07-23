@@ -110,7 +110,7 @@ export default function Configuracoes() {
   };
 
   const handleDeleteAccount = async () => {
-    if (confirm('ATENÇÃO: Isso excluirá permanentEMENTE todos os seus assistidos, prontuários e registros. Esta ação não pode ser desfeita. Deseja continuar?')) {
+    if (confirm('ATENÇÃO: Isso excluirá permanentemente todos os seus assistidos, prontuários e registros. Esta ação não pode ser desfeita. Deseja continuar?')) {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       

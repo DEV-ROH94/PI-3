@@ -78,8 +78,33 @@ export default function Dashboard() {
        setIsModalOpen(false);
        setNewNome('');
        setAssistidoId('');
-       // Force a refresh of the page or stats would be good here, but for now just clear
-       window.location.reload(); // Quick way to refresh all stats
+       // Refresh stats after creating a new record
+       const { count: assistidosCount } = await supabase.from('assistidos').select('*', { count: 'exact', head: true });
+       const { count: prontuariosCount } = await supabase.from('prontuarios').select('*', { count: 'exact', head: true });
+       const { count: criticosCount } = await supabase.from('prontuarios').select('*', { count: 'exact', head: true }).eq('risco_social', 'Urgente');
+       
+       setStats([
+         { label: 'Assistências Ativas', value: (assistidosCount || 0).toString(), icon: Users, color: 'text-blue-500', trend: 'Novo' },
+         { label: 'Prontuários Novos', value: (prontuariosCount || 0).toString(), icon: FileText, color: 'text-purple-500', trend: 'Novo' },
+         { label: 'Casos Críticos', value: (criticosCount || 0).toString(), icon: AlertCircle, color: 'text-red-500', trend: 'Novo' },
+         { label: 'Taxa de Sucesso', value: '100%', icon: TrendingUp, color: 'text-emerald-500', trend: 'Novo' },
+       ]);
+
+       // Refresh recent activities
+       const { data: recent } = await supabase
+         .from('prontuarios')
+         .select('*')
+         .order('created_at', { ascending: false })
+         .limit(4);
+       
+       if (recent) {
+         setRecentActivities(recent.map(r => ({
+           type: 'Prontuário',
+           detail: `Novo registro para: ${r.assistido_nome}`,
+           time: new Date(r.created_at).toLocaleDateString(),
+           status: r.status
+         })));
+       }
     } else {
        alert('Erro ao criar registro: ' + error.message);
     }

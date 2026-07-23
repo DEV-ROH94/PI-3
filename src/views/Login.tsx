@@ -2,11 +2,10 @@ import { useState } from 'react';
 import React from 'react';
 import { motion } from 'motion/react';
 import { Heart, Mail, Lock, UserPlus, ArrowRight, Loader2 } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 export default function Login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,7 +61,7 @@ export default function Login() {
       }
       setLoading(false);
     } else {
-      navigate('/dashboard');
+      setLoading(false);
     }
   };
 
